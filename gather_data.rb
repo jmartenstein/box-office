@@ -59,16 +59,9 @@ elsif options.data_type == :actuals
                                     "weekend-actuals") 
   xpath     = "//table[@class='sdt']//tr"
   sub_xpath = "./td"
-else
-  abort "Invalid type: #{options.data_type}"
 end
 
-#if $stdin.tty?
-#  page = Nokogiri::HTML($stdin.read)
-#else
-#  page = Nokogiri::HTML(open(url))
-#end
-
+page = Nokogiri::HTML(open(url))
 table = webpage_to_table(page, xpath, sub_xpath )
 
 # data post-processing
