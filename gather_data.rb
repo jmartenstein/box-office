@@ -64,6 +64,11 @@ end
 page = Nokogiri::HTML(open(url))
 table = webpage_to_table(page, xpath, sub_xpath )
 
+if table.empty?
+  puts "No rows retrieved! Maybe the webpage changed?"
+  exit 1
+end
+
 # data post-processing
 table.map{ |a| a[1].slice!(0,3) } if options.data_type == :pricing
 table.map{ |a| a[2].gsub!(/\D/,'') } if options.data_type == :forecast
