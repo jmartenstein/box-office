@@ -39,7 +39,10 @@ OptionParser.new do |opts|
   opts.banner = "Usage: gather_data.rb [options]"
   opts.on("-d", "--data [TYPE]", [:pricing, :actuals, :forecast],
           "Set data type (pricing, forecast, actuals") do |d|
-    options.data_type = d
+    options[:data_type] = d
+  end
+  opts.on("-u", "--url [address]", "Set an optional URL for importing") do |u|
+    options[:url] = u
   end
 end.parse!
 abort "Incorrect type specificed" if options.data_type.nil? 
@@ -50,7 +53,7 @@ if options.data_type == :pricing
   xpath     = "//table[@class='tableType-group hasGroups']//tr"
   sub_xpath = "./td/div//span/span"
 elsif options.data_type == :forecast
-  url       = find_url_by_substring("http://pro.boxoffice.com", 
+  url       = find_url_by_substring("http://pro.boxoffice.com/?s=weekend+forecast", 
                                     "weekend-forecast") 
   xpath     = "//div[@class='post-container']//tr"
   sub_xpath = "./td"
@@ -60,6 +63,9 @@ elsif options.data_type == :actuals
   xpath     = "//table[@class='sdt']//tr"
   sub_xpath = "./td"
 end
+
+# override the default URL if passed in from command line
+url = options[:url] if options[:url]
 
 page = Nokogiri::HTML(open(url))
 table = webpage_to_table(page, xpath, sub_xpath )
