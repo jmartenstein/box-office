@@ -58,7 +58,7 @@ elsif options.data_type == :forecast
   xpath     = "//div[@class='post-container']//tr"
   sub_xpath = "./td"
 elsif options.data_type == :actuals
-  url       = find_url_by_substring("http://pro.boxoffice.com", 
+  url       = find_url_by_substring("http://pro.boxoffice.com/?s=weekend+actuals", 
                                     "weekend-actuals") 
   xpath     = "//table[@class='sdt']//tr"
   sub_xpath = "./td"
