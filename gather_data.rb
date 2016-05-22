@@ -47,8 +47,8 @@ abort "Incorrect type specificed" if options.data_type.nil?
 # set parameters for each type of data
 if options.data_type == :pricing
   url       = 'http://fantasymovieleague.com/researchvault'
-  xpath     = "//table[@class='tableType-group hasGroups']//div[@class='text']"
-  sub_xpath = "./span"
+  xpath     = "//table[@class='tableType-group hasGroups']//tr"
+  sub_xpath = "./td/div//span/span"
 elsif options.data_type == :forecast
   url       = find_url_by_substring("http://pro.boxoffice.com", 
                                     "weekend-forecast") 
