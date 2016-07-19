@@ -1,5 +1,7 @@
 #!/usr/bin/
 
+#library(sm)
+
 cap_title <- function(title_string) {
   s <- strsplit(title_string, " ")[[1]]
     paste(toupper(substring(s, 1,1)), substring(s, 2),
@@ -52,6 +54,9 @@ load_actual_by_date <- function(date_string) {
   actual$weekend = actual$weekend / 1000000
   actual$total = actual$total / 1000000
 
+  # set week to factor
+  actual$weeks = factor(actual$weeks)
+
   # adjust change columns to decimals or missing
    
   return(actual)
@@ -66,12 +71,15 @@ forecast_and_actual_by_date <- function(date_full) {
   date_string = gsub("-", "", date_full)
   merged = merge_data(load_forecast_by_date(date_string),
                       load_actual_by_date(date_string))
-  merged$date = as.Date(date_full)
+  merged$date <- as.Date(date_full)
   merged_collapsed = merged[,c("date", "title", "weeks", "weekend.x", "weekend.y")]
+  merged_collapsed$diff = (merged_collapsed$weekend.y - 
+                           merged_collapsed$weekend.x) / 
+                           merged_collapsed$weekend.y
   return(merged_collapsed)
 }
 
-dates = c('2016-05-27', '2016-06-03', '2016-06-10')
+dates = c('2016-05-20', '2016-05-27', '2016-06-03', '2016-06-10', '2016-06-17')
 f_and_a = lapply(dates, forecast_and_actual_by_date)
 merged_combo = do.call("rbind", f_and_a)
 
