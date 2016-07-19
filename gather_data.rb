@@ -9,7 +9,9 @@ require 'open-uri'
 require 'pp'
 
 
-def webpage_to_table(page, xpath, sub_xpath)
+def webpage_to_table(url, xpath, sub_xpath)
+
+  page = Nokogiri::HTML(open(url))
 
   rows = []
   page.xpath(xpath).each do |row|
@@ -56,26 +58,25 @@ abort "Incorrect data source specified" if options.data_source.nil?
 
 # set parameters for each type of data
 if options.data_type == :pricing
-  url       = 'https://fantasymovieleague.com/researchvault'
-  xpath     = "//table[@class='tableType-group hasGroups']//tr"
-  sub_xpath = "./td/div//span/span"
+  url = options[:url] || 'https://fantasymovieleague.com/researchvault'
+  table = webpage_to_table(url,
+                           "//table[@class='tableType-group hasGroups']//tr",
+                           "./td/div//span/span")
 elsif options.data_type == :forecast
-  url       = find_url_by_substring("http://pro.boxoffice.com/?s=weekend+forecast", 
-                                    "weekend-forecast") 
-  xpath     = "//div[@class='post-container']//tr"
-  sub_xpath = "./td"
+  url = options[:url] ||
+        find_url_by_substring("http://pro.boxoffice.com/?s=weekend+forecast",
+                              "weekend-forecast")
+  table = webpage_to_table(url,
+                           "//div[@class='post-container']//tr",
+                           "./td")
 elsif options.data_type == :actuals
-  url       = find_url_by_substring("http://pro.boxoffice.com/?s=weekend+actuals", 
-                                    "weekend-actuals") 
-  xpath     = "//table[@class='sdt']//tr"
-  sub_xpath = "./td"
+  url = options[:url] ||
+        find_url_by_substring("http://pro.boxoffice.com/?s=weekend+actuals",
+                              "weekend-actuals")
+  table = webpage_to_table(url,
+                           "//table[@class='sdt']//tr",
+                           "./td")
 end
-
-# override the default URL if passed in from command line
-url = options[:url] if options[:url]
-
-page = Nokogiri::HTML(open(url))
-table = webpage_to_table(page, xpath, sub_xpath )
 
 if table.empty?
   puts "No rows retrieved! Maybe the webpage changed?"
